@@ -28,57 +28,98 @@
 
 
 /* STUDENT APPLICATION */
-$(function() {
-    var attendance = JSON.parse(localStorage.attendance),
-        $allMissed = $('tbody .missed-col'),
-        $allCheckboxes = $('tbody input');
+// MODEL
+var model = {
+	attendance: JSON.parse(localStorage.attendance)
+};
 
-    // Count a student's missed days
-    function countMissing() {
-        $allMissed.each(function() {
-            var studentRow = $(this).parent('tr'),
-                dayChecks = $(studentRow).children('td').children('input'),
-                numMissed = 0;
+// OCTOPUS
+var octopus = {
+	init: function() {
+		view.init();
+	},
+	getAttendance: function() {
+		return model.attendance;
+	}
+};
 
-            dayChecks.each(function() {
-                if (!$(this).prop('checked')) {
-                    numMissed++;
-                }
-            });
 
-            $(this).text(numMissed);
-        });
-    }
+// VIEW
+var view = {
+	init: function() {
+		var attendance = octopus.getAttendance();
+		console.log(attendance);
+		this.tableBody = $("tbody");
+		var tableHtml = "";
 
-    // Check boxes, based on attendace records
-    $.each(attendance, function(name, days) {
-        var studentRow = $('tbody .name-col:contains("' + name + '")').parent('tr'),
-            dayChecks = $(studentRow).children('.attend-col').children('input');
+		$.each(attendance, function(key, val) {
+			tableHtml += "<tr class='student'><td class='name-col'>" +
+				key + "</td>";
+				for(var i = 0; i < 12; i++) {
+					tableHtml += "<td class='attend-col'><input type='checkbox'></td>"
+				}
+				tableHtml += "<td class='missed-col'>0</td></tr>";
+		});
 
-        dayChecks.each(function(i) {
-            $(this).prop('checked', days[i]);
-        });
-    });
+		this.tableBody.append(tableHtml);
 
-    // When a checkbox is clicked, update localStorage
-    $allCheckboxes.on('click', function() {
-        var studentRows = $('tbody .student'),
-            newAttendance = {};
+		this.render();
+	}
+};
 
-        studentRows.each(function() {
-            var name = $(this).children('.name-col').text(),
-                $allCheckboxes = $(this).children('td').children('input');
+octopus.init();
 
-            newAttendance[name] = [];
+// $(function() {
+//     var attendance = JSON.parse(localStorage.attendance),
+//         $allMissed = $('tbody .missed-col'),
+//         $allCheckboxes = $('tbody input');
 
-            $allCheckboxes.each(function() {
-                newAttendance[name].push($(this).prop('checked'));
-            });
-        });
+//     // Count a student's missed days
+//     function countMissing() {
+//         $allMissed.each(function() {
+//             var studentRow = $(this).parent('tr'),
+//                 dayChecks = $(studentRow).children('td').children('input'),
+//                 numMissed = 0;
 
-        countMissing();
-        localStorage.attendance = JSON.stringify(newAttendance);
-    });
+//             dayChecks.each(function() {
+//                 if (!$(this).prop('checked')) {
+//                     numMissed++;
+//                 }
+//             });
 
-    countMissing();
-}());
+//             $(this).text(numMissed);
+//         });
+//     }
+
+//     // Check boxes, based on attendace records
+//     $.each(attendance, function(name, days) {
+//         var studentRow = $('tbody .name-col:contains("' + name + '")').parent('tr'),
+//             dayChecks = $(studentRow).children('.attend-col').children('input');
+
+//         dayChecks.each(function(i) {
+//             $(this).prop('checked', days[i]);
+//         });
+//     });
+
+//     // When a checkbox is clicked, update localStorage
+//     $allCheckboxes.on('click', function() {
+//         var studentRows = $('tbody .student'),
+//             newAttendance = {};
+
+//         studentRows.each(function() {
+//             var name = $(this).children('.name-col').text(),
+//                 $allCheckboxes = $(this).children('td').children('input');
+
+//             newAttendance[name] = [];
+
+//             $allCheckboxes.each(function() {
+//                 newAttendance[name].push($(this).prop('checked'));
+//             });
+//         });
+
+//         countMissing();
+//         localStorage.attendance = JSON.stringify(newAttendance);
+//     });
+
+//     countMissing();
+// }());
